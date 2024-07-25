@@ -5,6 +5,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## install nodeJS
 https://nodejs.org/en
 
+Once you installed nodeJS, you are able to use 'npm'
+
+## install dependencies by npm
+
+```sh
+npm install react-router-dom
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
