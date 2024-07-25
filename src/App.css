@@ -1,0 +1,37 @@
+.App {
+  text-align: center;
+}
+
+nav {
+  background-color: #0066ff; /* Theme color */
+  padding: 10px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  color: #0066ff; /* Theme color */
+}
+
+button {
+  background-color: #0066
+}

@@ -1,0 +1,63 @@
+.home-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .home-container h1 {
+    color: #0066ff; /* Theme color */
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    box-sizing: border-box;
+  }
+  
+  .search-button {
+    padding: 10px 20px;
+    background-color: #0066ff; /* Theme color */
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .search-button:hover {
+    background-color: #0056d6; /* Slightly darker shade for hover */
+  }
+  
+  .stocks-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .stocks-table th, .stocks-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .stocks-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .stocks-table td {
+    color: #333;
+  }
+  
+  .stocks-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
