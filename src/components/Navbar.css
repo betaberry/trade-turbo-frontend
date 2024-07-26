@@ -26,3 +26,11 @@
     text-decoration: underline;
   }
   
+  .navbar-title {
+    position: absolute;
+    right: 50%;
+    transform: translateX(50%);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+  }
