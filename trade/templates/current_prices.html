@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Current Stock Prices</title>
+</head>
+<body>
+    <h1>Current Stock Prices</h1>
+
+    <!-- Display stock prices in a table -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Stock Name</th>
+                <th>Current Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock[0] }}</td>
+                    <td>${{ stock[1] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
+    <a href="{{ url_for('profile') }}">Go to Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

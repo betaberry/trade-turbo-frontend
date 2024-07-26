@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>Profile</h1>
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <td>{{ user[0] }}</td>
+        </tr>
+        <tr>
+            <th>Wallet Balance</th>
+            <td>${{ user[1] }}</td>
+        </tr>
+        <tr>
+            <th>Stock Asset</th>
+            <td>${{ user[2] }}</td>
+        </tr>
+        <tr>
+            <th>Total PNL</th>
+            <td>${{ user[3] }}</td>
+        </tr>
+        <tr>
+            <th>Balance</th>
+            <td>${{ user[4] }}</td>
+        </tr>
+    </table>
+
+    <a href="{{ url_for('current_prices') }}">Stock price</a>
+    <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

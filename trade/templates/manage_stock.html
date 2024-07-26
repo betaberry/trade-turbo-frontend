@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Manage Stock</title>
+</head>
+<body>
+    <h1>Manage Stock</h1>
+
+    <form method="post" action="{{ url_for('manage_stock') }}">
+        <label for="stock_id">Stock:</label>
+        <select id="stock_id" name="stock_id">
+            {% for stock in stocks %}
+                <option value="{{ stock[0] }}">{{ stock[1] }} ({{ stock[2] }} - {{ stock[3] }})</option>
+            {% endfor %}
+        </select>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" min="1" required>
+
+        <label for="action">Action:</label>
+        <select id="action" name="action">
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <h2>Stock List</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Average Purchase Price</th>
+                <th>Current Price</th>
+                <th>PNL</th>
+                <th>Quantity</th>
+                <th>Total Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock[1] }}</td>
+                    <td>{{ stock[2] }}</td>
+                    <td>{{ stock[3] }}</td>
+                    <td>{{ stock[4] }}</td>
+                    <td>{{ stock[5] }}</td>
+                    <td>{{ stock[6] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p style="font-size: small;">
+        Wallet Balance: ${{ session['balance'] }}
+    </p>
+    <a href="{{ url_for('current_prices') }}">Stock price</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+</body>
+</html>
