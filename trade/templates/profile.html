@@ -8,27 +8,27 @@
     <table border="1">
         <tr>
             <th>Username</th>
-            <td>{{ user[0] }}</td>
+            <td>{{ username }}</td>
         </tr>
         <tr>
             <th>Wallet Balance</th>
-            <td>${{ user[1] }}</td>
+            <td>${{ wallet_balance }}</td>
         </tr>
         <tr>
             <th>Stock Asset</th>
-            <td>${{ user[2] }}</td>
+            <td>${{ stock_asset }}</td>
         </tr>
         <tr>
             <th>Total PNL</th>
-            <td>${{ user[3] }}</td>
+            <td>${{ total_pnl }}</td>
         </tr>
         <tr>
             <th>Balance</th>
-            <td>${{ user[4] }}</td>
+            <td>${{ total_balance }}</td>
         </tr>
     </table>
 
-    <a href="{{ url_for('current_prices') }}">Stock price</a>
+    <a href="{{ url_for('current_prices') }}">Stock Price</a>
     <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
     <a href="{{ url_for('logout') }}">Logout</a>
 </body>

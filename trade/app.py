@@ -5,6 +5,10 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with a random secret key
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 
 # Function to initialize the database
 def init_db():
@@ -21,7 +25,7 @@ def init_db():
                     walletBalance REAL NOT NULL DEFAULT 0,
                     stockAsset REAL NOT NULL DEFAULT 0,
                     totalPNL REAL NOT NULL DEFAULT 0,
-                    totalBalance REAL NOT NULL DEFAULT 0  -- Use totalBalance instead of balance
+                    totalBalance REAL NOT NULL DEFAULT 0
                 )
             ''')
 
@@ -61,7 +65,7 @@ def init_db():
                 c.execute('''
                     INSERT INTO users (username, password, walletBalance, stockAsset, totalPNL, totalBalance)
                     VALUES (?, ?, ?, ?, ?, ?)
-                ''', ('JohnDoe', 'password', 1000, 5000, 1500, 6000))
+                ''', ('JohnDoe', 'password', 1000, 0, 0, 1000))
                 conn.commit()
 
 
@@ -90,7 +94,7 @@ def register():
                 c.execute('''
                     INSERT INTO users (username, password, walletBalance, stockAsset, totalPNL, totalBalance)
                     VALUES (?, ?, ?, ?, ?, ?)
-                ''', (username, password, 1000, 5000, 1500, 6000))
+                ''', (username, password, 1000, 0, 0, 1000))
                 conn.commit()
                 return redirect(url_for('login'))
             except sqlite3.IntegrityError:
@@ -117,7 +121,7 @@ def login():
                 session['walletBalance'] = user[2]
                 session['stockAsset'] = user[3]
                 session['totalPNL'] = user[4]
-                session['totalBalance'] = user[5]  # Use totalBalance instead of balance
+                session['totalBalance'] = user[5]
                 return redirect(url_for('profile'))
             else:
                 return 'Invalid credentials'
@@ -131,7 +135,7 @@ def logout():
     session.pop('walletBalance', None)
     session.pop('stockAsset', None)
     session.pop('totalPNL', None)
-    session.pop('totalBalance', None)  # Use totalBalance instead of balance
+    session.pop('totalBalance', None)
     return redirect(url_for('login'))
 
 
@@ -149,12 +153,11 @@ def stocks():
         if quantity > 0:
             average_purchase_price = total_value / quantity
             pnl = (current_price - average_purchase_price) * quantity
-            updated_stocks.append((stock_id, name, average_purchase_price, current_price, pnl, quantity, total_value))
+            updated_stocks.append((stock_id, name, average_purchase_price, current_price, round(pnl, 2), quantity, round(total_value, 2)))
         else:
-            updated_stocks.append((stock_id, name, purchase_price, current_price, 0, quantity, total_value))
+            updated_stocks.append((stock_id, name, purchase_price, current_price, 0, quantity, round(total_value, 2)))
 
     return render_template('stocks.html', stocks=updated_stocks)
-
 
 @app.route('/profile')
 def profile():
@@ -165,14 +168,23 @@ def profile():
     with sqlite3.connect('database.db') as conn:
         c = conn.cursor()
         c.execute('''
-            SELECT username, walletBalance, stockAsset, totalPNL, totalBalance
+            SELECT username, walletBalance, stockAsset
             FROM users
             WHERE id = ?
         ''', (user_id,))
         user = c.fetchone()
 
     if user:
-        return render_template('profile.html', user=user)
+        username, wallet_balance, stock_asset = user
+        total_balance = round(wallet_balance + stock_asset, 2)
+        total_pnl = round(total_balance - 1000, 2)  # PNL as 1000 - total balance
+
+        return render_template('profile.html',
+                               username=username,
+                               wallet_balance=round(wallet_balance, 2),
+                               stock_asset=round(stock_asset, 2),
+                               total_pnl=total_pnl,
+                               total_balance=total_balance)
     else:
         return redirect(url_for('login'))
 
@@ -202,7 +214,7 @@ def manage_stock():
                     if action == 'buy':
                         total_cost = current_price * quantity
                         new_total_purchase_price = total_purchase_price + (current_price * quantity)
-                        new_total_value = total_value + (current_price * quantity)
+                        new_total_value = new_total_purchase_price
                         new_quantity = stock_quantity + quantity
                         average_purchase_price = new_total_purchase_price / new_quantity
 
@@ -212,22 +224,21 @@ def manage_stock():
                             # Update stock quantity, average purchase price, and total value
                             c.execute(
                                 'UPDATE stocks SET quantity = ?, purchasePrice = ?, totalPurchasePrice = ?, totalValue = ? WHERE id = ?',
-                                (new_quantity, average_purchase_price, new_total_purchase_price, new_total_value,
+                                (new_quantity, round(average_purchase_price, 2), round(new_total_purchase_price, 2), round(new_total_value, 2),
                                  stock_id))
 
                             # Update user wallet balance and stock asset
                             c.execute(
-                                'UPDATE users SET walletBalance = walletBalance - ?, stockAsset = stockAsset + ?, totalBalance = walletBalance + stockAsset WHERE id = ?',
-                                (total_cost, total_cost, user_id))
+                                'UPDATE users SET walletBalance = walletBalance - ?, stockAsset = (SELECT SUM(totalValue) FROM stocks) WHERE id = ?',
+                                (total_cost, user_id))
                             conn.commit()
-                            session['walletBalance'] = user_wallet_balance - total_cost  # Update session walletBalance
-                            session['stockAsset'] += total_cost  # Update session stockAsset
-                            session['totalBalance'] = session['walletBalance'] + session[
-                                'stockAsset']  # Update session totalBalance
+                            session['walletBalance'] = user_wallet_balance - total_cost
+                            session['stockAsset'] = sum(stock[6] for stock in get_stock_data())  # Recalculate total stock asset
+                            session['totalBalance'] = round(session['walletBalance'] + session['stockAsset'], 2)
                             return redirect(url_for('manage_stock'))
                         else:
                             return render_template('manage_stock.html', error="Insufficient funds",
-                                                   stocks=get_stock_data())
+                                                   stocks=get_stock_data(), walletBalance=user_wallet_balance)
 
                     elif action == 'sell':
                         if quantity <= stock_quantity:
@@ -236,33 +247,33 @@ def manage_stock():
                             average_purchase_price = total_value / stock_quantity
                             cost_of_sold = average_purchase_price * quantity
                             new_total_purchase_price = total_purchase_price - cost_of_sold
-                            new_total_value = total_value - cost_of_sold
+                            new_total_value = new_total_purchase_price
                             new_quantity = stock_quantity - quantity
                             new_average_purchase_price = new_total_value / new_quantity if new_quantity > 0 else 0
 
                             # Update stock quantity, total purchase price, and total value
                             c.execute(
                                 'UPDATE stocks SET quantity = ?, purchasePrice = ?, totalPurchasePrice = ?, totalValue = ? WHERE id = ?',
-                                (new_quantity, new_average_purchase_price, new_total_purchase_price, new_total_value,
+                                (new_quantity, round(new_average_purchase_price, 2), round(new_total_purchase_price, 2), round(new_total_value, 2),
                                  stock_id))
 
                             # Update user wallet balance and stock asset
                             c.execute(
-                                'UPDATE users SET walletBalance = walletBalance + ?, stockAsset = stockAsset - ?, totalBalance = walletBalance + stockAsset WHERE id = ?',
-                                (total_revenue, total_revenue, user_id))
+                                'UPDATE users SET walletBalance = walletBalance + ?, stockAsset = (SELECT SUM(totalValue) FROM stocks) WHERE id = ?',
+                                (total_revenue, user_id))
                             conn.commit()
-                            session['walletBalance'] += total_revenue  # Update session walletBalance
-                            session['stockAsset'] -= total_revenue  # Update session stockAsset
-                            session['totalBalance'] = session['walletBalance'] + session[
-                                'stockAsset']  # Update session totalBalance
+                            session['walletBalance'] += total_revenue
+                            session['stockAsset'] = sum(stock[6] for stock in get_stock_data())  # Recalculate total stock asset
+                            session['totalBalance'] = round(session['walletBalance'] + session['stockAsset'], 2)
                             return redirect(url_for('manage_stock'))
                         else:
                             return render_template('manage_stock.html', error="Not enough stock to sell",
-                                                   stocks=get_stock_data())
+                                                   stocks=get_stock_data(), walletBalance=user_wallet_balance)
             except sqlite3.Error as e:
                 return str(e)
 
-    return render_template('manage_stock.html', stocks=get_stock_data())
+    # Ensure walletBalance is included in the context
+    return render_template('manage_stock.html', stocks=get_stock_data(), walletBalance=session.get('walletBalance'))
 
 
 def get_stock_data():
@@ -271,6 +282,33 @@ def get_stock_data():
         c.execute('SELECT * FROM stocks')
         stocks = c.fetchall()
     return stocks
+
+
+@app.route('/update_prices', methods=['POST'])
+def update_prices():
+    # Placeholder logic for updating prices; replace with actual logic
+    import random  # For demo purposes only
+
+    # Define a function to simulate price updates
+    def simulate_price_update(current_price):
+        return round(current_price * (1 + random.uniform(-0.05, 0.05)), 2)
+
+    with sqlite3.connect('database.db') as conn:
+        c = conn.cursor()
+
+        # Fetch all stocks
+        c.execute('SELECT id, currentPrice FROM stocks')
+        stocks = c.fetchall()
+
+        # Update the price of each stock
+        for stock_id, current_price in stocks:
+            new_price = simulate_price_update(current_price)
+            c.execute('UPDATE stocks SET currentPrice = ? WHERE id = ?', (new_price, stock_id))
+
+        conn.commit()
+
+    # Redirect to the current prices page with updated data
+    return redirect(url_for('current_prices'))
 
 
 if __name__ == '__main__':

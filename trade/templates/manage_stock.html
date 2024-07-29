@@ -11,7 +11,7 @@
         <label for="stock_id">Stock:</label>
         <select id="stock_id" name="stock_id">
             {% for stock in stocks %}
-                <option value="{{ stock[0] }}">{{ stock[1] }} ({{ stock[2] }} - {{ stock[3] }})</option>
+                <option value="{{ stock[0] }}">{{ stock[1] }}</option>
             {% endfor %}
         </select>
 
@@ -49,7 +49,13 @@
                     <td>{{ stock[1] }}</td>
                     <td>{{ stock[2] }}</td>
                     <td>{{ stock[3] }}</td>
-                    <td>{{ stock[4] }}</td>
+                    <td>
+                        {% if stock[5] > 0 %}
+                            {{ (stock[3] - stock[2]) | round(2) }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
                     <td>{{ stock[5] }}</td>
                     <td>{{ stock[6] }}</td>
                 </tr>
@@ -58,11 +64,10 @@
     </table>
 
     <p style="font-size: small;">
-        Wallet Balance: ${{ session['balance'] }}
+        Wallet Balance: ${{ walletBalance | round(2) }}
     </p>
-    <a href="{{ url_for('current_prices') }}">Stock price</a>
+    <a href="{{ url_for('current_prices') }}">Stock Prices</a>
     <a href="{{ url_for('profile') }}">Profile</a>
     <a href="{{ url_for('logout') }}">Logout</a>
-
 </body>
 </html>

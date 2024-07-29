@@ -24,6 +24,10 @@
         </tbody>
     </table>
 
+    <form method="post" action="{{ url_for('update_prices') }}">
+        <button type="submit">Update Prices</button>
+    </form>
+
     <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
     <a href="{{ url_for('profile') }}">Go to Profile</a>
     <a href="{{ url_for('logout') }}">Logout</a>
