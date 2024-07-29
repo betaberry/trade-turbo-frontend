@@ -352,21 +352,9 @@ def dashboard():
         ''', (user_id,))
         user = c.fetchone()
 
-        c.execute('SELECT name, currentPrice FROM stocks')
-        stocks = c.fetchall()
-
     if user:
-        username, wallet_balance, stock_asset = user
-        total_balance = round(wallet_balance + stock_asset, 2)
-        total_pnl = round(total_balance - 1000, 2)  # PNL as 1000 - total balance
+        return render_template('dashboard.html')
 
-        return render_template('dashboard.html',
-                               username=username,
-                               wallet_balance=round(wallet_balance, 2),
-                               stock_asset=round(stock_asset, 2),
-                               total_pnl=total_pnl,
-                               total_balance=total_balance,
-                               stocks=stocks)
     else:
         return redirect(url_for('login'))
 
@@ -396,7 +384,6 @@ def stock_data():
         # Format the data for the chart
         formatted_data = [{'stockPrice': row[0], 'clickTimes': row[1]} for row in data]
 
-    print(formatted_data)
     return {'data': formatted_data}
 
 
