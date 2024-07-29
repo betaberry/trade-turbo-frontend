@@ -208,6 +208,7 @@ def manage_stock():
                     'SELECT purchasePrice, currentPrice, quantity, totalPurchasePrice, totalValue FROM stocks WHERE id = ?',
                     (stock_id,))
                 stock = c.fetchone()
+
                 if stock:
                     purchase_price, current_price, stock_quantity, total_purchase_price, total_value = stock
 
@@ -224,7 +225,8 @@ def manage_stock():
                             # Update stock quantity, average purchase price, and total value
                             c.execute(
                                 'UPDATE stocks SET quantity = ?, purchasePrice = ?, totalPurchasePrice = ?, totalValue = ? WHERE id = ?',
-                                (new_quantity, round(average_purchase_price, 2), round(new_total_purchase_price, 2), round(new_total_value, 2),
+                                (new_quantity, round(average_purchase_price, 2), round(new_total_purchase_price, 2),
+                                 round(new_total_value, 2),
                                  stock_id))
 
                             # Update user wallet balance and stock asset
@@ -233,7 +235,8 @@ def manage_stock():
                                 (total_cost, user_id))
                             conn.commit()
                             session['walletBalance'] = user_wallet_balance - total_cost
-                            session['stockAsset'] = sum(stock[6] for stock in get_stock_data())  # Recalculate total stock asset
+                            session['stockAsset'] = sum(
+                                stock[6] for stock in get_stock_data())  # Recalculate total stock asset
                             session['totalBalance'] = round(session['walletBalance'] + session['stockAsset'], 2)
                             return redirect(url_for('manage_stock'))
                         else:
@@ -254,7 +257,8 @@ def manage_stock():
                             # Update stock quantity, total purchase price, and total value
                             c.execute(
                                 'UPDATE stocks SET quantity = ?, purchasePrice = ?, totalPurchasePrice = ?, totalValue = ? WHERE id = ?',
-                                (new_quantity, round(new_average_purchase_price, 2), round(new_total_purchase_price, 2), round(new_total_value, 2),
+                                (new_quantity, round(new_average_purchase_price, 2), round(new_total_purchase_price, 2),
+                                 round(new_total_value, 2),
                                  stock_id))
 
                             # Update user wallet balance and stock asset
@@ -263,12 +267,13 @@ def manage_stock():
                                 (total_revenue, user_id))
                             conn.commit()
                             session['walletBalance'] += total_revenue
-                            session['stockAsset'] = sum(stock[6] for stock in get_stock_data())  # Recalculate total stock asset
+                            session['stockAsset'] = sum(
+                                stock[6] for stock in get_stock_data())  # Recalculate total stock asset
                             session['totalBalance'] = round(session['walletBalance'] + session['stockAsset'], 2)
                             return redirect(url_for('manage_stock'))
                         else:
                             return render_template('manage_stock.html', error="Not enough stock to sell",
-                                                   stocks=get_stock_data(), walletBalance=user_wallet_balance)
+                                                   stocks=get_stock_data(), walletBalance=session.get('walletBalance'))
             except sqlite3.Error as e:
                 return str(e)
 
