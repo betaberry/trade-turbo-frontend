@@ -3,14 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Trade Turbo - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background-color: #0066ff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        ul.options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul.options li {
+            margin: 10px 0;
+        }
+
+        ul.options li a {
+            text-decoration: none;
+            color: #0066ff;
+            font-size: 18px;
+        }
+
+        ul.options li a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Website</h1>
-    <p>Please choose an option:</p>
-    <ul>
-        <li><a href="/register">Sign Up</a></li>
-        <li><a href="/login">Login</a></li>
-    </ul>
+    <nav>
+        <ul>
+            <li><a href="/home">Home</a></li>
+            <li><a href="/management">Management</a></li>
+        </ul>
+        <ul>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Welcome to Trade Turbo</h1>
+        <p>Please choose an option:</p>
+        <ul class="options">
+            <li><a href="/register">Sign Up</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </div>
 </body>
 </html>
