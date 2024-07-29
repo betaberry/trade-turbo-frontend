@@ -69,21 +69,36 @@
         ul.options li a:hover {
             text-decoration: underline;
         }
+
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <nav>
-        <ul>
-            <li><a href="/home">Home</a></li>
-            <li><a href="/management">Management</a></li>
-        </ul>
-        <ul>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login">Login</a></li>
-        </ul>
+        <div class="nav-left">
+            <ul>
+                <li><a href="/current_prices">Home</a></li>
+                <li><a href="/manage_stock">Management</a></li>
+            </ul>
+        </div>
+        <div class="nav-center">
+            Trade Turbo
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </div>
     </nav>
     <div class="container">
-        <h1>Welcome to Trade Turbo</h1>
+        <h1>Welcome!</h1>
         <p>Please choose an option:</p>
         <ul class="options">
             <li><a href="/register">Sign Up</a></li>

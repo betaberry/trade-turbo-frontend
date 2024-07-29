@@ -1,37 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Stocks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Turbo - Stocks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background-color: #0066ff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        nav .nav-left, nav .nav-right {
+            display: flex;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0066ff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            color: #0066ff;
+            text-decoration: none;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Stocks</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Average Purchase Price</th>
-                <th>Current Price</th>
-                <th>PNL</th>
-                <th>Quantity</th>
-                <th>Total Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock in stocks %}
+    <nav>
+        <div class="nav-left">
+            <ul>
+                <li><a href="/current_prices">Home</a></li>
+                <li><a href="/manage_stock">Management</a></li>
+            </ul>
+        </div>
+        <div class="nav-center">
+            Trade Turbo
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Stocks Overview</h1>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ stock[1] }}</td>
-                    <td>{{ stock[2] }}</td>
-                    <td>{{ stock[3] }}</td>
-                    <td>{{ stock[4] }}</td>
-                    <td>{{ stock[5] }}</td>
-                    <td>{{ stock[6] }}</td>
+                    <th>Name</th>
+                    <th>Average Purchase Price</th>
+                    <th>Current Price</th>
+                    <th>PNL</th>
+                    <th>Quantity</th>
+                    <th>Total Value</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
-    <a href="{{ url_for('profile') }}">Go to Profile</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                    <tr>
+                        <td>{{ stock[1] }}</td>
+                        <td>{{ stock[2] }}</td>
+                        <td>{{ stock[3] }}</td>
+                        <td>{{ stock[4] }}</td>
+                        <td>{{ stock[5] }}</td>
+                        <td>{{ stock[6] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
+        <a href="{{ url_for('profile') }}">Go to Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
 </body>
 </html>

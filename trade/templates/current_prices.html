@@ -1,35 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Current Stock Prices</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Turbo - Current Stock Prices</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background-color: #0066ff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+        }
+
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0066ff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .update-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .update-button:hover {
+            background-color: #0055cc;
+        }
+
+        .links a {
+            color: #0066ff;
+            text-decoration: none;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Current Stock Prices</h1>
+    <nav>
+        <div class="nav-left">
+            <ul>
+                <li><a href="/current_prices">Home</a></li>
+                <li><a href="/manage_stock">Management</a></li>
+            </ul>
+        </div>
+        <div class="nav-center">
+            Trade Turbo
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Current Stock Prices</h1>
 
-    <!-- Display stock prices in a table -->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Stock Name</th>
-                <th>Current Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock in stocks %}
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ stock[0] }}</td>
-                    <td>${{ stock[1] }}</td>
+                    <th>Stock Name</th>
+                    <th>Current Price</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                    <tr>
+                        <td>{{ stock[0] }}</td>
+                        <td>${{ stock[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <form method="post" action="{{ url_for('update_prices') }}">
-        <button type="submit">Update Prices</button>
-    </form>
+        <form method="post" action="{{ url_for('update_prices') }}">
+            <button class="update-button" type="submit">Update Prices</button>
+        </form>
 
-    <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
-    <a href="{{ url_for('profile') }}">Go to Profile</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
+        <div class="links">
+            <a href="{{ url_for('manage_stock') }}">Manage Stocks</a>
+            <a href="{{ url_for('profile') }}">Go to Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
 </body>
 </html>
