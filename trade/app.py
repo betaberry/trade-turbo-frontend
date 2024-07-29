@@ -43,6 +43,15 @@ def init_db():
                 )
             ''')
 
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS stocks_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    stockId INTEGER NOT NULL,
+                    stockPrice REAL NOT NULL,
+                    clickTimes INTEGER NOT NULL
+                )
+            ''')
+
             # Insert sample stock data if table is empty
             c.execute('SELECT COUNT(*) FROM stocks')
             if c.fetchone()[0] == 0:
@@ -305,15 +314,90 @@ def update_prices():
         c.execute('SELECT id, currentPrice FROM stocks')
         stocks = c.fetchall()
 
-        # Update the price of each stock
+        # Fetch the current maximum clickTimes for each stock from the history table
+        c.execute('SELECT stockId, MAX(clickTimes) FROM stocks_history GROUP BY stockId')
+        click_times = dict(c.fetchall())
+
+        # Update the price of each stock and insert into stocks_history
         for stock_id, current_price in stocks:
             new_price = simulate_price_update(current_price)
             c.execute('UPDATE stocks SET currentPrice = ? WHERE id = ?', (new_price, stock_id))
+
+            # Determine the clickTimes for the stock
+            current_click_times = click_times.get(stock_id, 0) + 1
+
+            # Insert the updated price into stocks_history
+            c.execute('''
+                INSERT INTO stocks_history (stockId, stockPrice, clickTimes)
+                VALUES (?, ?, ?)
+            ''', (stock_id, new_price, current_click_times))
 
         conn.commit()
 
     # Redirect to the current prices page with updated data
     return redirect(url_for('current_prices'))
+
+@app.route('/dashboard')
+def dashboard():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    with sqlite3.connect('database.db') as conn:
+        c = conn.cursor()
+        c.execute('''
+            SELECT username, walletBalance, stockAsset
+            FROM users
+            WHERE id = ?
+        ''', (user_id,))
+        user = c.fetchone()
+
+        c.execute('SELECT name, currentPrice FROM stocks')
+        stocks = c.fetchall()
+
+    if user:
+        username, wallet_balance, stock_asset = user
+        total_balance = round(wallet_balance + stock_asset, 2)
+        total_pnl = round(total_balance - 1000, 2)  # PNL as 1000 - total balance
+
+        return render_template('dashboard.html',
+                               username=username,
+                               wallet_balance=round(wallet_balance, 2),
+                               stock_asset=round(stock_asset, 2),
+                               total_pnl=total_pnl,
+                               total_balance=total_balance,
+                               stocks=stocks)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/stock_his_data')
+def stock_data():
+    stock_name = request.args.get('stock')
+
+    with sqlite3.connect('database.db') as conn:
+        c = conn.cursor()
+
+        # Get the stock ID from the stocks table
+        c.execute('SELECT id FROM stocks WHERE name = ?', (stock_name,))
+        stock_id = c.fetchone()
+        if not stock_id:
+            return {'error': 'Stock not found'}, 404
+        stock_id = stock_id[0]
+
+        # Fetch the historical data for the stock
+        c.execute('''
+            SELECT stockPrice, clickTimes
+            FROM stocks_history
+            WHERE stockId = ?
+            ORDER BY clickTimes
+        ''', (stock_id,))
+        data = c.fetchall()
+
+        # Format the data for the chart
+        formatted_data = [{'stockPrice': row[0], 'clickTimes': row[1]} for row in data]
+
+    print(formatted_data)
+    return {'data': formatted_data}
 
 
 if __name__ == '__main__':

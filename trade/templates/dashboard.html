@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Turbo - Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background-color: #0066ff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+        }
+
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #chart-container {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 300px; /* Adjust as needed */
+            margin: 20px auto; /* Center the container */
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('stockChart').getContext('2d');
+    const stockName = new URLSearchParams(window.location.search).get('stock');
+    
+    fetch(`/stock_his_data?stock=${stockName}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(response => {
+            console.log('Response Data:', response); // Log the entire response
+
+            const stockData = response.data; // Ensure this is an array
+            console.log('Stock Data:', stockData); // Log the stock data
+
+            if (!Array.isArray(stockData)) {
+                console.error('Expected an array for stockData:', stockData);
+                return;
+            }
+
+            const labels = stockData.map((data, index) => 'Day ' + (index + 1));
+            const prices = stockData.map(data => data.stockPrice);
+
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: stockName,
+                        data: prices,
+                        borderColor: '#0066ff',
+                        backgroundColor: 'rgba(0, 102, 255, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Day'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Price'
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Fetch Error:', error)); // Log any fetch errors
+});
+
+    
+    </script>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <ul>
+                <li><a href="/current_prices">Home</a></li>
+                <li><a href="/manage_stock">Management</a></li>
+            </ul>
+        </div>
+        <div class="nav-center">
+            Trade Turbo
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Stock Price Dashboard</h1>
+        <div id="chart-container">
+            <canvas id="stockChart"></canvas>
+        </div>
+    </div>
+</body>
+</html>

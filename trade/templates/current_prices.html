@@ -87,6 +87,11 @@
             background-color: #f2f2f2;
         }
 
+        tr:hover {
+            background-color: #ddd;
+            cursor: pointer;
+        }
+
         .update-button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -112,6 +117,11 @@
             text-decoration: underline;
         }
     </style>
+    <script>
+        function goToDashboard(stockName) {
+            window.location.href = `/dashboard?stock=${stockName}`;
+        }
+    </script>
 </head>
 <body>
     <nav>
@@ -143,7 +153,7 @@
             </thead>
             <tbody>
                 {% for stock in stocks %}
-                    <tr>
+                    <tr onclick="goToDashboard('{{ stock[0] }}')">
                         <td>{{ stock[0] }}</td>
                         <td>${{ stock[1] }}</td>
                     </tr>
