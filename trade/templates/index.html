@@ -56,7 +56,7 @@
 
         .container {
             text-align: center;
-            padding: 50px;
+            padding: 0px;
         }
 
         h1 {
@@ -93,6 +93,19 @@
             background-color: #0066ff;
             color: white;
         }
+
+        .image-container {
+            display: flex;
+            justify-content: center; /* Center the image horizontally */
+            align-items: center; /* Center the image vertically (if you set a height) */
+            margin: 50px auto;
+        }
+
+        .image-container img {
+            max-width: 30%; /* Adjust this percentage to make the image smaller */
+            height: auto;
+            border-radius: 8px; /* Optional: adds rounded corners to the image */
+        }
     </style>
 </head>
 <body>
@@ -113,6 +126,11 @@
             </ul>
         </div>
     </nav>
+
+    <div class="image-container">
+        <img src="static/pic.webp" alt="Welcome Image">
+    </div>
+
     <div class="container">
         <h1>Welcome!</h1>
         <p>Please choose an option:</p>
@@ -121,5 +139,6 @@
             <li><a href="/login">Login</a></li>
         </ul>
     </div>
+    
 </body>
 </html>
