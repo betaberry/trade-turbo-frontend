@@ -13,43 +13,43 @@ dev-job:
   script:
     - pip install -r requirements.txt
     - pip list
-    - python trade/app.py &
+    - python app.py &
   artifacts:
     paths:
-      - flaskenv
+      - venv
   only:
     - TradeLogic
 
-# smoke-test:
-#   stage: test
-#   before_script:
-#     - apt update -y
-#     - apt install -y curl
-#     - source ./flaskenv/bin/activate
-#     - python app.py &
-#   script:
-#     - echo "Testing execution"
-#     - sleep 2
-#     - echo "slept"
-#     - curl 127.0.0.1:5001
-#   needs:
-#     - flake-test
-#   only:
-#     - main
+smoke-test:
+  stage: test
+  before_script:
+    - apt update -y
+    - apt install -y curl
+    - source ./venv/bin/activate
+    - python app.py &
+  script:
+    - echo "Testing execution"
+    - sleep 2
+    - echo "slept"
+    - curl 127.0.0.1:5001
+  needs:
+    - flake-test
+  only:
+    - TradeLogic
 
-# flake-test:
-#   stage: test
-#   before_script:
-#     - source ./flaskenv/bin/activate
-#   script:
-#     - flake8 --format=html --htmldir=flake8-results/
-#   artifacts:
-#     paths:
-#       - flake8-results
-#       - flaskenv
-#     when: always
-#   only:
-#     - main
+flake-test:
+  stage: test
+  before_script:
+    - source ./venv/bin/activate
+  script:
+    - flake8 --format=html --htmldir=flake8-results/
+  artifacts:
+    paths:
+      - flake8-results
+      - flaskenv
+    when: always
+  only:
+    - TradeLogic
 
 stage-job:
   stage: deploy
