@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Turbo - Home</title>
+    <title>Trade Turbo - Welcome</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,6 +19,18 @@
             justify-content: space-between;
             align-items: center;
             color: white;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+        }
+
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
         }
 
         nav ul {
@@ -54,28 +66,32 @@
         ul.options {
             list-style-type: none;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Adjust space between buttons */
         }
 
         ul.options li {
-            margin: 10px 0;
+            display: inline;
         }
 
         ul.options li a {
+            display: block;
             text-decoration: none;
             color: #0066ff;
-            font-size: 18px;
+            font-size: 16px; /* Adjust font size */
+            padding: 8px 20px; /* Adjust padding */
+            border: 1px solid #0066ff;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            text-align: center;
+            width: 120px; /* Set a specific width */
+            box-sizing: border-box; /* Include padding and border in the element's total width */
         }
 
         ul.options li a:hover {
-            text-decoration: underline;
-        }
-
-        .nav-center {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            font-weight: bold;
+            background-color: #0066ff;
+            color: white;
         }
     </style>
 </head>
