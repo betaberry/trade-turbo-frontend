@@ -1,49 +1,71 @@
-# This file is a template, and might need editing before it works on your project.
-# This is a sample GitLab CI/CD configuration file that should run without any modifications.
-# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
-# it uses echo commands to simulate the pipeline execution.
-#
-# A pipeline is composed of independent jobs that run scripts, grouped into stages.
-# Stages run in sequential order, but jobs within stages run in parallel.
-#
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
-#
-# You can copy and paste this template into a new `.gitlab-ci.yml` file.
-# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
-#
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+image: python:3.12.2-slim
 
-stages:          # List of stages for jobs, and their order of execution
+stages:
   - build
   - test
   - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
+dev-job:
   stage: build
+  before_script:
+    - python -m venv venv
+    - source ./venv/bin/activate
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
+    - pip install -r requirements.txt
+    - pip list
+    - python app.py &
+  artifacts:
+    paths:
+      - flaskenv
+  only:
+    - main
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
+smoke-test:
+  stage: test
+  before_script:
+    - apt update -y
+    - apt install -y curl
+    - source ./flaskenv/bin/activate
+    - python app.py &
   script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
+    - echo "Testing execution"
+    - sleep 2
+    - echo "slept"
+    - curl 127.0.0.1:5001
+  needs:
+    - flake-test
+  only:
+    - main
 
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
+flake-test:
+  stage: test
+  before_script:
+    - source ./flaskenv/bin/activate
   script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+    - flake8 --format=html --htmldir=flake8-results/
+  artifacts:
+    paths:
+      - flake8-results
+      - flaskenv
+    when: always
+  only:
+    - main
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
+stage-job:
+  stage: deploy
+  before_script:
+    - apt update -y
+    - apt install -y curl
+    - apt install -y openssh-client
+    - echo "***********"
+    - echo "$EC2_SSH_PEM" > ./pk.pem
+    - chmod 400 ./pk.pem
   script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - echo "Delivery"
+    - ssh -v -o StrictHostKeyChecking=no -i ./pk.pem ubuntu@[YOUR_IP_ADDRESS] 'cd /home/ubuntu/[YOUR_STOCKIFY_LOCATION] && git fetch origin main && git reset --hard origin/main && sudo systemctl restart clstat'
+  after_script:
+    - echo "Testing AWS deployment"
+    - sleep 30
+    - curl [YOUR_IP_ADDRESS]:5001
+  only:
+    - main
