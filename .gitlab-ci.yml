@@ -46,8 +46,8 @@ flake-test:
     - flake8 . --exclude=venv --ignore=E402,E203,W503 --output-file=flake8-report.txt
   artifacts:
     paths:
-      - flake8-results
-      - flaskenv
+      - flake8-report.txt
+      - venv
     when: always
   only:
     - TradeLogic
