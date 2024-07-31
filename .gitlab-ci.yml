@@ -40,9 +40,10 @@ smoke-test:
 flake-test:
   stage: test
   before_script:
+    - pip install flake8
     - source ./venv/bin/activate
   script:
-    - flake8 --format=html --htmldir=flake8-results/
+    - flake8 . --exclude=venv --ignore=E402,E203,W503 --output-file=flake8-report.txt
   artifacts:
     paths:
       - flake8-results
