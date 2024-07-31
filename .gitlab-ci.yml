@@ -51,7 +51,6 @@ flake-test:
     paths:
       - flake8-report.txt
       - venv
-    when: always
   allow_failure: true
   only:
     - TradeLogic
