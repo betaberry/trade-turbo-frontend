@@ -46,6 +46,7 @@ flake-test:
     - sleep 10
   script:
     - flake8 . --exclude=venv --ignore=E402,E203,W503 --output-file=flake8-report.txt
+    - echo "okkkk"
   artifacts:
     paths:
       - flake8-report.txt
