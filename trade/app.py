@@ -6,7 +6,9 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with a random secret key
 
 @app.route('/')
-def home():
+def index():
+    if 'username' in session:
+        return redirect(url_for('current_prices'))
     return render_template('index.html')
 
 
@@ -145,7 +147,7 @@ def logout():
     session.pop('stockAsset', None)
     session.pop('totalPNL', None)
     session.pop('totalBalance', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
 @app.route('/stocks')
