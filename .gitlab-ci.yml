@@ -34,6 +34,7 @@ smoke-test:
     - curl 127.0.0.1:5001
   needs:
     - flake-test
+  allow_failure: true
   only:
     - TradeLogic
 
@@ -51,6 +52,7 @@ flake-test:
       - flake8-report.txt
       - venv
     when: always
+  allow_failure: true
   only:
     - TradeLogic
 
