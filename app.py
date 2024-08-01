@@ -126,9 +126,29 @@ def register():
                     (username, password, 1000, 0, 0, 1000),
                 )
                 conn.commit()
-                return redirect(url_for("login"))
             except sqlite3.IntegrityError:
-                return "Username already exists"
+                pass
+            
+            c.execute(
+                """
+                SELECT id, username, walletBalance, stockAsset, totalPNL, totalBalance
+                FROM users
+                WHERE username = ? AND password = ?
+            """,
+                (username, password),
+            )
+            user = c.fetchone()
+            if user:
+                session["user_id"] = user[0]
+                session["username"] = user[1]
+                session["walletBalance"] = user[2]
+                session["stockAsset"] = user[3]
+                session["totalPNL"] = user[4]
+                session["totalBalance"] = user[5]
+                return redirect(url_for("current_prices"))
+            else:
+                return "Invalid credentials"            
+    
     return render_template("register.html")
 
 
@@ -155,7 +175,7 @@ def login():
                 session["stockAsset"] = user[3]
                 session["totalPNL"] = user[4]
                 session["totalBalance"] = user[5]
-                return redirect(url_for("profile"))
+                return redirect(url_for("current_prices"))
             else:
                 return "Invalid credentials"
     return render_template("login.html")
