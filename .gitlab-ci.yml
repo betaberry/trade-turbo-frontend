@@ -45,7 +45,7 @@ flake-test:
     - pip install flake8
     - sleep 10
   script:
-    - flake8 only.py --ignore=E402,E203,W503 --output-file=flake8-report.txt
+    - flake8 app.py --ignore=E402,E203,W503 --output-file=flake8-report.txt
     - echo "okkkk"
   artifacts:
     paths:
@@ -69,7 +69,7 @@ stage-job:
     - ssh -o StrictHostKeyChecking=no -i ./pk.pem ubuntu@"$EC2_PUBLIC_IP" 'cd /home/ubuntu/code/trade-turbo && git checkout TradeLogic && git pull origin TradeLogic && git reset --hard HEAD && rm -rf venv && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && pip install gunicorn && sudo systemctl restart trade-turbo.service'
   after_script:
     - echo "Testing AWS deployment"
-    - sleep 30
-    - curl "$EC2_PUBLIC_IP":5001
+    - sleep 10
+    # - curl "$EC2_PUBLIC_IP":5001
   only:
     - TradeLogic

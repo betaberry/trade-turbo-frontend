@@ -525,6 +525,9 @@ def stock_data():
 
     return {"data": formatted_data}
 
+@app.route("/stock_detail")
+def stock_detail():
+    return render_template("stock_detail.html")
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5001)

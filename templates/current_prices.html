@@ -116,10 +116,34 @@
         .links a:hover {
             text-decoration: underline;
         }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
     </style>
     <script>
         function goToDashboard(stockName) {
             window.location.href = `/dashboard?stock=${stockName}`;
+        }
+
+        function filterTable() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('table tbody tr');
+            rows.forEach(row => {
+                const stockName = row.cells[0].textContent.toLowerCase();
+                if (stockName.includes(searchInput)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
     </script>
 </head>
@@ -148,6 +172,10 @@
     </nav>
     <div class="container">
         <h1>Current Stock Prices</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for stock names..." onkeyup="filterTable()">
+        </div>
 
         <table>
             <thead>
