@@ -81,6 +81,18 @@ def init_db():
                         for s in stocks
                     ],
                 )
+                c.execute("SELECT id, currentPrice FROM stocks")
+                stocks2 = c.fetchall()
+                c.executemany(
+                    """
+                    INSERT INTO stocks_history (stockId, stockPrice, clickTimes)
+                    VALUES (?, ?, ?)
+                """,
+                    [
+                        (s[0], s[1], 1)
+                        for s in stocks2
+                    ],                    
+                )
                 conn.commit()
 
             # Insert a sample user if table is empty
